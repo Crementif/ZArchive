@@ -67,6 +67,19 @@ jobs:
           bootstrap-vcpkg.bat -disableMetrics
           vcpkg integrate install
           vcpkg install zstd
+      
+    - name: Print ENV
+      run: printenv
+    - name: Update VCPKG
+      shell: bash
+      run: |
+          vcpkg_root="$VCPKG_INSTALLATION_ROOT"
+          echo "$vcpkg_root"
+          cd "$VCPKG_INSTALLATION_ROOT"
+          git reset --hard
+          git pull --quiet
+          bootstrap-vcpkg.bat -disableMetrics
+          vcpkg integrate install
 
     - name: Configure CMake (Linux)
       if: matrix.os != 'windows-latest'
@@ -88,7 +101,7 @@ jobs:
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-        -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_INSTALLATION_ROOT }}/vcpkg/scripts/buildsystems/vcpkg.cmake
+        -DCMAKE_TOOLCHAIN_FILE=C:/vcpkg/scripts/buildsystems/vcpkg.cmake
         -S ${{ github.workspace }}
       shell: pwsh
 
