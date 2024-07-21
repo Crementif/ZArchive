@@ -13,17 +13,17 @@ on:
 jobs:
   build:
     runs-on: ubuntu-latest
-    strategy:
-      matrix:
-        include:
-          - deps: "build-base cmake zstd-dev"
-            name: "Ubuntu"
+    # strategy:
+    #   matrix:
+    #     include:
+    #       - deps: "cmake"
+    #         name: "Ubuntu"
 
     steps:
     - uses: actions/checkout@v3
 
-    - name: Install dependencies
-      run: sudo apt-get update && sudo apt-get install -y ${{ matrix.deps }}
+    # - name: Install dependencies
+    #   run: sudo apt-get update && sudo apt-get install -y ${{ matrix.deps }}
 
     - name: Create build directory
       run: mkdir -p build
