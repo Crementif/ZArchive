@@ -65,7 +65,7 @@ jobs:
           echo "$VCPKG_INSTALLATION_ROOT"
           cd "$VCPKG_INSTALLATION_ROOT"
           bootstrap-vcpkg.bat -disableMetrics
-          vcpkg integrate
+          vcpkg integrate install
           vcpkg install zstd
 
     - name: Configure CMake (Linux)
