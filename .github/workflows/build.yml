@@ -58,11 +58,15 @@ jobs:
         echo "build-output-dir=${{ github.workspace }}/build" >> "$GITHUB_OUTPUT"
 
     - name: Install vcpkg dependencies (Windows)
+      shell: bash
       if: matrix.os == 'windows-latest'
       run: |
-        ${{ env.VCPKG_INSTALLATION_ROOT }}/vcpkg install
-        ${{ env.VCPKG_INSTALLATION_ROOT }}/vcpkg integrate install
-      shell: pwsh
+          vcpkg_root="$VCPKG_INSTALLATION_ROOT"
+          echo "$VCPKG_INSTALLATION_ROOT"
+          cd "$VCPKG_INSTALLATION_ROOT"
+          bootstrap-vcpkg.bat -disableMetrics
+          vcpkg integrate
+          vcpkg install zstd
 
     - name: Configure CMake (Linux)
       if: matrix.os != 'windows-latest'
@@ -84,7 +88,7 @@ jobs:
         -DCMAKE_CXX_COMPILER=${{ matrix.cpp_compiler }}
         -DCMAKE_C_COMPILER=${{ matrix.c_compiler }}
         -DCMAKE_BUILD_TYPE=${{ matrix.build_type }}
-        -DCMAKE_TOOLCHAIN_FILE=$/vcpkg/scripts/buildsystems/vcpkg.cmake
+        -DCMAKE_TOOLCHAIN_FILE=${{ env.VCPKG_INSTALLATION_ROOT }}/vcpkg/scripts/buildsystems/vcpkg.cmake
         -S ${{ github.workspace }}
       shell: pwsh
 
