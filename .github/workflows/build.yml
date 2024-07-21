@@ -10,39 +10,88 @@ on:
       - master
       - actions
 
+env:
+  # Customize the CMake build type
+  BUILD_TYPE: RelWithDebInfo
+
 jobs:
-  build:
-    runs-on: ubuntu-latest
-    # strategy:
-    #   matrix:
-    #     include:
-    #       - deps: "cmake"
-    #         name: "Ubuntu"
+  build-linux:
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - name: linux
+            os: ubuntu-latest
+
+    runs-on: ${{ matrix.os }}
 
     steps:
-    - uses: actions/checkout@v3
+      - name: Checkout Source code
+        if: github.event_name == 'push'
+        uses: actions/checkout@v4
+  
+      - name: Checkout Source code
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+  
+      - name: Create build directory
+        run: mkdir -p build
+  
+      - name: Run CMake
+        run: |
+          cd build
+          cmake ..
+  
+      - name: Build project
+        run: |
+          cd build
+          cmake --build . --config ${{ env.BUILD_TYPE }}
+          
+      - name: List output for debugging
+        run: ls -l build
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zarchive-binary-${{ matrix.name }}
+          path: build/zarchive
 
-    # - name: Install dependencies
-    #   run: sudo apt-get update && sudo apt-get install -y ${{ matrix.deps }}
-
-    - name: Create build directory
-      run: mkdir -p build
-
-    - name: Run CMake
-      run: |
-        cd build
-        cmake ..
-
-    - name: Build project
-      run: |
-        cd build
-        make
-
-    - name: List output for debugging
-      run: ls -l build
-
-    - name: Upload artifact
-      uses: actions/upload-artifact@v3
-      with:
-        name: zarchive-binary-${{ matrix.name }}
-        path: build/zarchive
+  build-windows:
+    runs-on: windows-latest
+    strategy:
+      fail-fast: false
+    
+    steps:
+      - name: Checkout Source code
+        if: github.event_name == 'push'
+        uses: actions/checkout@v4
+  
+      - name: Checkout Source code
+        if: github.event_name == 'pull_request'
+        uses: actions/checkout@v4
+        with:
+          ref: ${{ github.event.pull_request.head.sha }}
+  
+      - name: Create build directory
+        run: mkdir build
+  
+      - name: Run CMake
+        run: |
+          cd build
+          cmake ..
+  
+      - name: Build project
+        run: |
+          cd build
+          cmake --build . --config ${{ env.BUILD_TYPE }}
+          
+      - name: List output for debugging
+        run: dir -l build
+      
+      - name: Upload artifact
+        uses: actions/upload-artifact@v4
+        with:
+          name: zarchive-binary-${{ matrix.name }}
+          path: build/zarchive.exe
