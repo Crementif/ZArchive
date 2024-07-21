@@ -1,6 +1,4 @@
-# This starter workflow is for a CMake project running on multiple platforms. There is a different starter workflow if you just want a single platform.
-# See: https://github.com/actions/starter-workflows/blob/main/ci/cmake-single-platform.yml
-name: CMake on multiple platforms
+name: Build ZArchive
 
 on:
   push:
@@ -30,15 +28,12 @@ jobs:
           - os: windows-latest
             c_compiler: cl
             cpp_compiler: cl
-            artifact: zarchive.exe
           - os: ubuntu-latest
             c_compiler: gcc
             cpp_compiler: g++
-            artifact: zarchive
           - os: ubuntu-latest
             c_compiler: clang
             cpp_compiler: clang++
-            artifact: zarchive
         exclude:
           - os: windows-latest
             c_compiler: gcc
